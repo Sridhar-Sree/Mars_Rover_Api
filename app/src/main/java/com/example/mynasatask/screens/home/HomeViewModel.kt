@@ -28,6 +28,7 @@ class HomeScreenViewModel @Inject constructor(
 
     init {
         loadMarsList()
+        Log.d("HomeViewModel", "Intilaize Init")
     }
 
     fun searchMarsPhotoLis(query: String) {
@@ -74,7 +75,7 @@ class HomeScreenViewModel @Inject constructor(
                             earth_date = photo.earth_date
                         )
                     }
-                    Log.d("Srezzz", "marslistentries: $marsListEntries")
+                    Log.d("MarsTaskLogd", "marslistentries: $marsListEntries")
                     isLoading.value = false
                     if (marsListEntries != null) {
                         marsList.value = marsListEntries

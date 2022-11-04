@@ -30,12 +30,12 @@ class marsDetailViewModel @Inject constructor(
 
             var result = repository.getMarsList()
 
-            Log.d("Srezzz", "loaddetails: ${result.data}")
+            Log.d("MarsTaskLogd", "loaddetails: ${result.data}")
 
             when (result) {
                 is Resource.Success -> {
                     val details = result.data?.photos?.filter { photo -> photo.id == photid }
-                    Log.d("Srezzzfilter", "filter: ${details}")
+                    Log.d("MarsTaskLogdfilter", "filter: ${details}")
 
                     if (details != null) {
                         details.mapIndexed { index, photo ->

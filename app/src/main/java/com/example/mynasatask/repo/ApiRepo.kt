@@ -23,16 +23,4 @@ import javax.inject.Inject
         return Resource.Success(response)
     }
 
-    suspend fun getMarsPhotoInfo(Photoid: Int): Resource<Photo> {
-        val response = try {
-            api.getPhoto(Photoid)
-        } catch (e: Exception) {
-            Log.d("Error Details Reponse", "getMarsList: $e")
-            return Resource.Error("An unknown error occured.")
-        }
-        Log.d("Success Details Reponse", "getMarsList: $response")
-        return Resource.Success(response)
-    }
-
-
 }

@@ -2,6 +2,7 @@ package com.example.mynasatask.screens.home
 
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -12,8 +13,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
@@ -24,6 +27,7 @@ import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -34,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import com.example.mynasatask.model.MarsListEntry
 
 @Composable
@@ -47,7 +52,12 @@ fun HomeScreen(
     ) {
         Column {
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "Mars Rover API", style = MaterialTheme.typography.h5, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+            Text(
+                text = "Mars Rover API",
+                style = MaterialTheme.typography.h5,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
             SearchBar(
                 hint = "Search Here...",
                 modifier = Modifier
@@ -122,11 +132,7 @@ fun MarsList(
     Log.d("MarsList", "MarsListTotal: ${marsList}")
 
     LazyColumn(contentPadding = PaddingValues(16.dp)) {
-        val itemCount = if (marsList.size % 1 == 0) {
-            marsList.size / 2
-        } else {
-            marsList.size / 2 + 1
-        }
+        val itemCount = marsList.size
         items(itemCount) {
             if (it >= itemCount - 1 && !endReached && !isLoading && !isSearching) {
                 LaunchedEffect(key1 = true) {
@@ -208,10 +214,13 @@ fun MarsCard(
                 shape = RectangleShape,
                 elevation = 5.dp
             ) {
-                AsyncImage(
+                val painter = rememberAsyncImagePainter(
                     model = entry.img_src,
-                    contentDescription = "Thumbnail",
+                    placeholder = rememberVectorPainter(Icons.Default.Refresh)
                 )
+
+
+                Image(painter = painter, contentDescription = "Thumbnail")
             }
             Column() {
                 Text(text = entry.camera_name, style = MaterialTheme.typography.h6)
@@ -273,6 +282,7 @@ fun MarsCard(
         }
     }
 }
+
 @Composable
 fun RetrySection(
     error: String,

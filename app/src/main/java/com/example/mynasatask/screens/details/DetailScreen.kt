@@ -11,6 +11,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -26,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import com.example.mynasatask.model.Photo
 import java.util.*
 
@@ -44,8 +48,8 @@ fun MarsDetailScreen(
     val marsdetails by remember { viewModel.marsphoto }
 
 
-    Log.d("Srezzz", "in detail screen: ${marsdetails}")
-    Log.d("Srezzz", "in detail screen: ${marsid}")
+    Log.d("MarsTaskLogd", "in detail screen: ${marsdetails}")
+    Log.d("MarsTaskLogd", "in detail screen: ${marsid}")
 
     Box(
         modifier = Modifier
@@ -130,7 +134,14 @@ fun DetailScreenStateWrapper(
 
     Column {
         if (marslist.isEmpty()) {
-            CircularProgressIndicator()
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Column() {
+                    CircularProgressIndicator(color = MaterialTheme.colors.primary)
+                }
+            }
         } else {
             Log.d("Detailed Function", "DetailScreenStateWrapper: $marslist")
             MarsDetailSection(marsInfo = marslist[0])
@@ -159,7 +170,22 @@ fun MarsDetailSection(
             textAlign = TextAlign.Center,
             color = MaterialTheme.colors.onSurface
         )
-        AsyncImage(model = marsInfo.img_src, contentDescription = "Detail Image")
+
+        //AsyncImage(model = marsInfo.img_src, contentDescription = "Detail Image")
+
+        val painter = rememberAsyncImagePainter(
+            model = marsInfo.img_src,
+            placeholder = rememberVectorPainter(Icons.Default.Refresh)
+        )
+
+        Image(
+            painter = painter,
+            contentDescription = "Thumbnail",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(500.dp)
+        )
+
         Text(
             text = "Lanched Date: ${marsInfo.rover.launch_date}",
             style = MaterialTheme.typography.caption
