@@ -18,7 +18,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -28,7 +27,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.mynasatask.model.Photo
-import com.example.mynasatask.ui.Resource
 import java.util.*
 
 @SuppressLint("ProduceStateDoesNotAssignValue")
@@ -41,16 +39,21 @@ fun MarsDetailScreen(
     viewModel: marsDetailViewModel = hiltViewModel()
 ) {
 
-    val marsInfo = produceState<Resource<Photo>>(initialValue = Resource.Loading()) {
+    viewModel.loadmarsimage(photid = marsid)
 
-        Log.d("DetailScreen", "MarsDetailScreen: $value")
+    val marsdetails by remember { viewModel.marsphoto }
 
-    }.value
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(Color.White)
-        .padding(bottom = 16.dp)
+
+    Log.d("Srezzz", "in detail screen: ${marsdetails}")
+    Log.d("Srezzz", "in detail screen: ${marsid}")
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .padding(bottom = 16.dp)
     ) {
+
         DetailScreenTop(
             navController = navController,
             modifier = Modifier
@@ -59,7 +62,7 @@ fun MarsDetailScreen(
                 .align(Alignment.TopCenter)
         )
         DetailScreenStateWrapper(
-            marsInfo = marsInfo,
+            marslist = marsdetails,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(
@@ -83,15 +86,6 @@ fun MarsDetailScreen(
                     bottom = 16.dp
                 )
         )
-        Box(contentAlignment = Alignment.TopCenter,
-            modifier = Modifier
-                .fillMaxSize()) {
-            if(marsInfo is Resource.Success) {
-                Log.d("MarsDetailScreen", "MarsDetailScreen: ${marsInfo.data}")
-
-                AsyncImage(model = marsInfo.data?.img_src, contentDescription ="Image" )
-            }
-        }
     }
 }
 //}
@@ -129,32 +123,21 @@ fun DetailScreenTop(
 
 @Composable
 fun DetailScreenStateWrapper(
-    marsInfo: Resource<Photo>,
+    marslist: List<Photo>,
     modifier: Modifier = Modifier,
     loadingModifier: Modifier = Modifier
 ) {
-    when(marsInfo) {
-        is Resource.Success -> {
-            MarsDetailSection(
-                marsInfo = marsInfo.data!!,
-                modifier = modifier
-                    .offset(y = (-20).dp)
-            )
-        }
-        is Resource.Error -> {
-            Text(
-                text = marsInfo.message!!,
-                color = Color.Red,
-                modifier = modifier
-            )
-        }
-        is Resource.Loading -> {
-            CircularProgressIndicator(
-                color = MaterialTheme.colors.primary,
-                modifier = loadingModifier
-            )
+
+    Column {
+        if (marslist.isEmpty()) {
+            CircularProgressIndicator()
+        } else {
+            Log.d("Detailed Function", "DetailScreenStateWrapper: $marslist")
+            MarsDetailSection(marsInfo = marslist[0])
+
         }
     }
+
 }
 
 @Composable
@@ -168,7 +151,6 @@ fun MarsDetailSection(
         modifier = modifier
             .fillMaxSize()
             .offset(y = 100.dp)
-            .verticalScroll(scrollState)
     ) {
         Text(
             text = "#${marsInfo.id} ${marsInfo.rover.name.capitalize(Locale.ROOT)}",
@@ -177,5 +159,19 @@ fun MarsDetailSection(
             textAlign = TextAlign.Center,
             color = MaterialTheme.colors.onSurface
         )
+        AsyncImage(model = marsInfo.img_src, contentDescription = "Detail Image")
+        Text(
+            text = "Lanched Date: ${marsInfo.rover.launch_date}",
+            style = MaterialTheme.typography.caption
+        )
+        Text(
+            text = "Rover Name: ${marsInfo.rover.name}",
+            fontSize = 20.0.sp
+        )
+        Text(
+            text = "Camera Name: ${marsInfo.camera.name}",
+            fontSize = 20.0.sp,
+        )
+
     }
 }

@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.mynasatask.model.MarsListEntry
 import com.example.mynasatask.model.Photo
 import com.example.mynasatask.repo.MarsRepo
 import com.example.mynasatask.ui.Resource
@@ -22,30 +24,36 @@ class marsDetailViewModel @Inject constructor(
     var isLoading = mutableStateOf(false)
     var endReached = mutableStateOf(false)
 
-    init {
-        loadmarsimage(photid = 1)
-    }
-
-    private fun loadmarsimage(photid: Int) {
+    fun loadmarsimage(photid: Int) {
         viewModelScope.launch {
             isLoading.value = true
 
-            var result = repository.getMarsPhotoInfo(photid)
+            var result = repository.getMarsList()
+
             Log.d("Srezzz", "loaddetails: ${result.data}")
 
             when (result) {
                 is Resource.Success -> {
+                    val details = result.data?.photos?.filter { photo -> photo.id == photid }
+                    Log.d("Srezzzfilter", "filter: ${details}")
 
-                    val phots = result.data?.id.toString().mapIndexed { index, photo ->
-//                        Photo(
-//                            camera = photscamera,
-//                            earth_date = phots.earth_date,
-//                            id = photo.id,
-//                            img_src = phots.img_src,
-//                            rover = phots.rover,
-//                            sol = phots.sol
-//                        )
+                    if (details != null) {
+                        details.mapIndexed { index, photo ->
+                            Photo(
+                                camera = photo.camera,
+                                img_src = photo.img_src,
+                                rover = photo.rover,
+                                sol = photo.sol,
+                                id = photo.id,
+                                earth_date = photo.earth_date
+                            )
+                        }
                     }
+
+                    if (details != null) {
+                        marsphoto.value = details
+                    }
+                    Log.d("Sreezznn viewmodel last", "${marsphoto.value}")
 
                 }
                 is Resource.Error -> {
