@@ -9,7 +9,7 @@ import retrofit2.http.Query
 interface MarsApi {
 
   //  https://api.nasa.gov/mars-photos/
-    @GET("api/v1/rovers/curiosity/photos?sol=10&api_key=$DEMO_KEY")
+    @GET("api/v1/rovers/opportunity/photos?sol=10&api_key=$DEMO_KEY")
     suspend fun getMarsListApi(): MarsApi
 
 }
